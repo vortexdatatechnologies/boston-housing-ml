@@ -32,3 +32,8 @@ This database includes 506 instances (i.e., rows of data) and 14 attributes (or 
 - MEDV: Median value of owner-occupied homes in $1000s.
 
 The goal with this database is usually to predict the median value of houses (MEDV) as a function of the other characteristics. Therefore, it is a commonly used dataset for regression problems.
+
+##Visualization
+This code parses the data from the dataset. It obtains the dataset from the OpenML repository and visualizes the data using various techniques. Next, a histogram is created for each column of the dataset and a correlation matrix is calculated to visualize the correlation between the different features.
+Finally, scatter plots are created for the features most correlated with the target variable.
+Overall, this code provides a basic analysis of the Boston Housing dataset by visualizing the distribution of the data, exploring the correlation between features, and examining the relationship between specific features and the target variable.
