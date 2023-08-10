@@ -2,56 +2,55 @@ from sklearn.datasets import fetch_openml
 import matplotlib.pyplot as plt
 import seaborn as sns
 from preprocess import preprocess_data
+import pandas as pd
 
-train_set_scaled, test_set_scaled, train_set_labels, test_set_labels = preprocess_data()
-# Importación y preprocesamiento como lo tienes
-# ...
+def load_data():
+    return fetch_openml(name="boston", version=1, as_frame=True).frame
 
-# Mostrar la versión procesada de los datos
-print(train_set_scaled.head())
+def display_head(data):
+    print(data.head())
 
-# Crear un histograma para cada columna en los datos procesados
-train_set_scaled.hist(bins=30, figsize=(20, 15))
-plt.suptitle('Histograms of Preprocessed Data')
-plt.show()
-
-# Crear una matriz de correlación para los datos procesados
-corr_matrix_processed = train_set_scaled.corr()
-
-# Dibujar un mapa de calor de la matriz de correlación para los datos procesados
-plt.figure(figsize=(10, 10))
-sns.heatmap(corr_matrix_processed, annot=True, cmap='coolwarm')
-plt.title('Correlation Heatmap of Preprocessed Data')
-plt.show()
-
-# ... (Resto del código para visualizar datos originales)
-
-# Load the Boston Housing dataset
-boston_dataset = fetch_openml(name="boston", version=1, as_frame=True)
-boston = boston_dataset.frame
-target = boston['MEDV']
-
-# Display the values of the target variable
-print(target.head())
-
-# Display the first few rows of the dataset
-print(boston.head())
-
-# Create a histogram for each column
-boston.hist(bins=30, figsize=(20, 15))
-plt.show()
-
-# Create a correlation matrix
-corr_matrix = boston.corr()
-
-# Draw a heatmap of the correlation matrix
-plt.figure(figsize=(10, 10))
-sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
-plt.show()
-
-# Create scatter plots of the features most correlated with MEDV
-for col in ['RM', 'LSTAT', 'PTRATIO']:
-    plt.scatter(boston[col], boston['MEDV'])
-    plt.xlabel(col)
-    plt.ylabel('MEDV')
+def plot_histogram(data, title, figsize=(20, 15)):
+    data.hist(bins=30, figsize=figsize)
+    plt.suptitle(title)
     plt.show()
+
+def plot_heatmap(data, title, figsize=(10, 10)):
+    corr_matrix = data.corr()
+    plt.figure(figsize=figsize)
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
+    plt.title(title)
+    plt.show()
+
+def plot_scatter_with_regression(data, x_cols, y_col):
+    for col in x_cols:
+        sns.regplot(x=data[col], y=data[y_col], scatter_kws={'alpha': 0.5})
+        plt.xlabel(col)
+        plt.ylabel(y_col)
+        plt.show()
+
+def compare_histograms(data1, data2, title1, title2):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(20, 10))
+    data1.hist(bins=30, ax=axes[0])
+    data2.hist(bins=30, ax=axes[1])
+    axes[0].set_title(title1)
+    axes[1].set_title(title2)
+    plt.show()
+
+if __name__ == "__main__":
+    X_train_scaled, X_test_scaled, y_train, y_test = preprocess_data()
+    boston = load_data()
+
+    # Display processed and raw data
+    display_head(X_train_scaled)
+    display_head(boston)
+
+    # Compare histograms of raw and processed data
+    compare_histograms(boston.drop('MEDV', axis=1), X_train_scaled, 'Raw Data', 'Processed Data')
+
+    # Heatmaps of correlation matrices for raw and processed data
+    plot_heatmap(boston, 'Correlation Heatmap of Raw Data')
+    plot_heatmap(X_train_scaled, 'Correlation Heatmap of Processed Data')
+
+    # Scatter plots with regression lines for features most correlated with MEDV
+    plot_scatter_with_regression(boston, ['RM', 'LSTAT', 'PTRATIO'], 'MEDV')
